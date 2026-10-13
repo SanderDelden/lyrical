@@ -1,0 +1,732 @@
+/* Plain CSS on purpose: the in-car browser can lag behind current Chromium,
+   so no nesting, color-mix() or other recent features. */
+
+/* Theme tokens. Light is the base; dark applies when the device asks for it
+   (unless the toggle forces light) or when the toggle forces dark. The dark
+   values are listed twice because plain CSS cannot share them between a media
+   query and an attribute selector. */
+
+:root {
+  color-scheme: light;
+  --bg: #f4efe6;
+  --fg: #16141a;
+  --muted: rgba(22, 20, 26, 0.64);
+  --line: rgba(22, 20, 26, 0.42);
+  --line-past: rgba(22, 20, 26, 0.18);
+  --hairline: rgba(22, 20, 26, 0.12);
+  --surface: rgba(255, 255, 255, 0.55);
+  --accent: #e5482d;
+  --veil: rgba(244, 239, 230, 0.8);
+  --glow-1: rgba(229, 72, 45, 0.4);
+  --glow-2: rgba(255, 184, 77, 0.55);
+  --shadow: 0 1.5rem 3.5rem rgba(60, 40, 20, 0.22);
+
+  --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* The lyrics use the plain system font. */
+  --font-lyrics: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Spotify's own green, for the button that hands over to Spotify. */
+  --spotify: #1ed760;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0c11;
+    --fg: #f6f1e7;
+    --muted: rgba(246, 241, 231, 0.62);
+    --line: rgba(246, 241, 231, 0.4);
+    --line-past: rgba(246, 241, 231, 0.17);
+    --hairline: rgba(246, 241, 231, 0.14);
+    --surface: rgba(255, 255, 255, 0.06);
+    --accent: #ff6a4d;
+    --veil: rgba(13, 12, 17, 0.72);
+    --glow-1: rgba(255, 106, 77, 0.34);
+    --glow-2: rgba(110, 86, 255, 0.34);
+    --shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.55);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0c11;
+  --fg: #f6f1e7;
+  --muted: rgba(246, 241, 231, 0.62);
+  --line: rgba(246, 241, 231, 0.4);
+  --line-past: rgba(246, 241, 231, 0.17);
+  --hairline: rgba(246, 241, 231, 0.14);
+  --surface: rgba(255, 255, 255, 0.06);
+  --accent: #ff6a4d;
+  --veil: rgba(13, 12, 17, 0.72);
+  --glow-1: rgba(255, 106, 77, 0.34);
+  --glow-2: rgba(110, 86, 255, 0.34);
+  --shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.55);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.logo svg {
+  width: 1.15em;
+  height: 1.15em;
+  fill: currentColor;
+}
+
+.logo .logo-active {
+  fill: var(--accent);
+}
+
+/* Display screens */
+
+.screen {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* A blurred wash of colour behind the content, with a veil on top that keeps
+   the text readable whatever the album cover looks like. */
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.backdrop div {
+  position: absolute;
+  top: -20%;
+  right: -20%;
+  bottom: -20%;
+  left: -20%;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(45% 55% at 18% 22%, var(--glow-1), transparent 70%),
+    radial-gradient(50% 60% at 85% 85%, var(--glow-2), transparent 70%);
+  background-position: center;
+  background-size: cover;
+  filter: blur(4.5rem) saturate(1.6);
+  transition: background-image 1.2s ease;
+}
+
+.backdrop::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--veil);
+}
+
+/* Small, quiet buttons in the corner */
+
+.controls {
+  position: absolute;
+  left: 2rem;
+  bottom: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 2rem;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.control:hover,
+.control:focus-visible {
+  color: var(--fg);
+}
+
+.control svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Pairing screen */
+
+.pairing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+}
+
+.pairing-text {
+  max-width: 26rem;
+}
+
+.pairing-text h1 {
+  margin: 1.25rem 0 1rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.pairing-text p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+
+/* The QR code stays dark-on-white in both themes so that it scans reliably. */
+.qr {
+  display: block;
+  width: min(22rem, 60vmin);
+  height: min(22rem, 60vmin);
+  padding: 0.75rem;
+  border-radius: 1.75rem;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Player */
+
+.player {
+  display: grid;
+  grid-template-columns: minmax(17rem, 27vw) 1fr;
+}
+
+.now-playing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.75rem;
+  min-width: 0;
+  padding: 2.5rem 1.5rem 6rem 2.5rem;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 1.25rem;
+  object-fit: cover;
+  box-shadow: var(--shadow);
+}
+
+.track {
+  min-width: 0;
+}
+
+.track h1 {
+  font-size: clamp(1.6rem, 2.3vw, 2.4rem);
+}
+
+.track p {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+}
+
+.progress {
+  height: 0.3rem;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.progress div {
+  height: 100%;
+  border-radius: 1rem;
+  background: var(--accent);
+  transition: width 0.5s linear;
+}
+
+.lyrics {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-lyrics);
+  font-size: clamp(2rem, 4.3vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1.25;
+  /* Lines fade out towards the top and bottom edge instead of being cut off. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 70%, transparent 100%);
+}
+
+.synced {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  padding: 0 3rem 0 1.5rem;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.line {
+  margin: 0;
+  padding: 0.4em 0;
+  color: var(--line);
+  transition: color 0.35s ease;
+}
+
+.line.past {
+  color: var(--line-past);
+}
+
+.line.active {
+  color: var(--fg);
+}
+
+.status,
+.plain {
+  margin: 0;
+  padding: 3rem 3rem 3rem 1.5rem;
+  color: var(--muted);
+}
+
+.status,
+.loading {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.status small {
+  display: block;
+  margin-top: 0.4em;
+  color: var(--fg);
+  font-size: 0.6em;
+  font-weight: 600;
+}
+
+.plain {
+  height: 100%;
+  padding-top: 20vh;
+  padding-bottom: 35vh;
+  overflow-y: auto;
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.55em;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.loading {
+  gap: 0.35em;
+  padding-left: 1.5rem;
+}
+
+.loading i {
+  width: 0.28em;
+  height: 0.28em;
+  border-radius: 50%;
+  background: var(--line);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.loading i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loading i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Narrow or upright screens: track details in a strip above the lyrics. */
+@media (orientation: portrait), (max-width: 52rem) {
+  .player {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .now-playing {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .cover {
+    width: 4.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .track {
+    flex: 1;
+  }
+
+  .progress {
+    margin-top: 0.75rem;
+  }
+
+  .synced,
+  .status,
+  .plain {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .controls {
+    left: 1.5rem;
+    bottom: 1rem;
+  }
+}
+
+/* Phone pages */
+
+.phone {
+  max-width: 28rem;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.phone .logo {
+  margin-bottom: 2.5rem;
+}
+
+.phone h1 {
+  margin-bottom: 0.75rem;
+}
+
+.phone h2 {
+  margin: 2.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.button {
+  display: block;
+  padding: 1rem 1.75rem;
+  border-radius: 2rem;
+  background: var(--spotify);
+  color: #000;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+
+.access {
+  margin: 1rem 0 1.5rem;
+  padding: 0 1.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  list-style: none;
+  text-align: left;
+}
+
+.access li {
+  padding: 1.1rem 0;
+}
+
+.access li + li {
+  border-top: 1px solid var(--hairline);
+}
+
+.access strong,
+.access span {
+  display: block;
+}
+
+.access span {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Help page */
+
+.doc {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 5rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.doc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+}
+
+.doc-header a {
+  text-decoration: none;
+}
+
+.doc h1 {
+  font-size: clamp(2.5rem, 7vw, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.doc h2 {
+  margin: 0 0 1rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.doc section {
+  margin-top: 3.5rem;
+  /* Leaves room above the heading when jumping to it from the links. */
+  scroll-margin-top: 1.5rem;
+}
+
+.doc .lead {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.45;
+}
+
+.doc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+
+.doc-nav a {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 2rem;
+  background: var(--surface);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.doc a {
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+.doc ol {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.doc li {
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
+}
+
+.doc li::marker {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.doc .note {
+  padding: 0.9rem 1.1rem;
+  border-left: 0.25rem solid var(--accent);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.doc details {
+  border-top: 1px solid var(--hairline);
+}
+
+.doc details:last-of-type {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.doc summary {
+  padding: 1rem 2rem 1rem 0;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+}
+
+.doc summary::-webkit-details-marker {
+  display: none;
+}
+
+.doc summary::after {
+  content: "+";
+  position: absolute;
+  right: 0.25rem;
+  top: 0.8rem;
+  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.doc details[open] summary::after {
+  content: "\2212";
+}
+
+.doc details p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.doc code {
+  padding: 0.1em 0.35em;
+  border-radius: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+.doc code.block {
+  display: block;
+  margin: 0.6rem 0;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .synced,
+  .line,
+  .backdrop div,
+  .progress div {
+    transition: none;
+  }
+
+  .loading i {
+    animation: none;
+  }
+}
+
+/* Safety notice, shown over the display until it is accepted */
+
+.notice {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--veil);
+}
+
+.notice-card {
+  max-width: 32rem;
+  padding: 2.5rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.75rem;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.notice-card p {
+  margin: 1rem 0 2rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.45;
+}
+
+.notice-card .button {
+  width: 100%;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.doc-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+  color: var(--muted);
+  font-size: 0.95rem;
+}

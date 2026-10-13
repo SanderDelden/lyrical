@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lyrical",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2026-10-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": { "directory": "dist/client", "not_found_handling": "none", "binding": "ASSETS" },
+  "kv_namespaces": [{ "binding": "KV" }],
+  "secrets": { "required": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"] },
+  "observability": { "enabled": true }
+}
