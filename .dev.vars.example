@@ -1,0 +1,4 @@
+# Copy to .dev.vars and fill in the values from your app at
+# https://developer.spotify.com/dashboard
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
