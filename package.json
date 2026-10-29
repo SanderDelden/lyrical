@@ -34,6 +34,24 @@
     "start": "vite preview",
     "lint": "eslint .",
     "typecheck": "wrangler types && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy": "wrangler deploy"
+  },
+  "cloudflare": {
+    "products": [
+      "Workers",
+      "KV"
+    ],
+    "bindings": {
+      "KV": {
+        "description": "Stores pairing codes and Spotify sessions. Created for you."
+      },
+      "SPOTIFY_CLIENT_ID": {
+        "description": "Client ID of your Spotify app, from the [Spotify developer dashboard](https://developer.spotify.com/dashboard)."
+      },
+      "SPOTIFY_CLIENT_SECRET": {
+        "description": "Client secret of the same Spotify app, under **View client secret** in the created app."
+      }
+    }
   }
 }
