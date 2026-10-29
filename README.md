@@ -143,3 +143,4 @@ display (car)                    worker                         phone
 | `lib/` | Spotify OAuth, KV storage, LRCLIB lookup and LRC parsing |
 | `tests/` | Tests for the library code and the API routes |
 | `wrangler.jsonc` | Worker config: KV namespace and secrets |
+| `.github/workflows/ci.yml` | Lint, test and build on every push |
