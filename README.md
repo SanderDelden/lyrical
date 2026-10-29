@@ -92,6 +92,20 @@ create.
 > plays a fixed track against the local clock; `?demo=120` starts playing two
 > minutes in.
 
+### Tests
+
+```sh
+npm test            # run once
+npx vitest          # watch mode
+```
+
+The tests use [Vitest](https://vitest.dev) and run in plain Node. The Workers
+runtime module is replaced by an in-memory stand-in
+(`tests/support/cloudflare-workers.ts`) and calls to Spotify and LRCLIB are
+mocked. They cover the lyrics lookup and LRC parsing, the Spotify OAuth helpers,
+and every API route including the full pairing flow. The screens themselves
+(`app/display.tsx` and the pages) are not covered.
+
 ## How it works
 
 ```bash
@@ -127,4 +141,5 @@ display (car)                    worker                         phone
 | `app/pair/[code]/` | Confirmation page opened on the phone |
 | `app/api/` | Pairing, Spotify login, token and logout routes |
 | `lib/` | Spotify OAuth, KV storage, LRCLIB lookup and LRC parsing |
+| `tests/` | Tests for the library code and the API routes |
 | `wrangler.jsonc` | Worker config: KV namespace and secrets |
