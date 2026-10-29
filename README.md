@@ -13,6 +13,9 @@ can read along.
 - Lyrics come from [LRCLIB](https://lrclib.net); playback position comes from
   the Spotify Web API.
 
+It runs on Cloudflare Workers. To host your own copy, see
+[Deploy to Cloudflare](#deploy-to-cloudflare).
+
 ## Preview
 
 <p align="center">
@@ -49,6 +52,57 @@ create.
    Spotify account that should be able to connect. Your own account does not
    have to be added. While the app is in development mode, Spotify refuses
    accounts that are not on this list.
+
+## Deploy to Cloudflare
+
+Once the Spotify app is set up, you can deploy your own copy of Lyrical to
+Cloudflare Workers.
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/SanderDelden/lyrical)
+
+1. Use the button above to open the Cloudflare Workers deploy page.
+
+2. Select your Git account or pair with one (GitHub or GitLab) (if not already
+   paired). By default it will create the repository `lyrical` under the
+   account, change it if you want. Optionally create the repository as private.
+
+3. Fill out `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`, all other fields
+   can be left as-is.
+
+4. Click `Deploy`, Cloudflare will now clone the repository into your GitHub or
+   GitLab account, creates the KV namespace, and deploy the Worker.
+
+5. Once the deployment is complete, the Worker URL will be displayed in the
+   logs. Open your Spotify app's settings in the
+   [Spotify developer dashboard](https://developer.spotify.com/dashboard) and
+   add this as a redirect URI, with `/api/auth/callback` appended. For example:
+
+   ```bash
+   https://<worker-name>.<subdomain>.workers.dev/api/auth/callback
+   ```
+
+6. Open `https://<worker-name>.<subdomain>.workers.dev` on the display.
+
+> [!IMPORTANT]
+> Also add every Spotify account that will use the app under
+> **User Management**. Your own account does not need to be added.
+
+### Changing things later
+
+- **Worker name / URL:** change `name` in `wrangler.jsonc`, and update the
+  redirect URI in Spotify to match.
+- **Custom domain:** add it to the Worker under **Settings → Domains & Routes**
+  in the Cloudflare dashboard, and add
+  `https://<your-domain>/api/auth/callback` as a redirect URI in Spotify. The
+  app derives its redirect URI from the address it is opened on.
+- **Rotating Spotify credentials:** change them under **Workers & Pages → your
+  Worker → Settings → Variables and Secrets**.
+- **Deploying from your machine instead:** run `npx wrangler login` once, then:
+
+  ```sh
+  npm run build
+  npx wrangler deploy --secrets-file .dev.vars
+  ```
 
 ## Development
 
