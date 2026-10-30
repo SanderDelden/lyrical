@@ -53,5 +53,8 @@
         "description": "Client secret of the same Spotify app, under **View client secret** in the created app."
       }
     }
+  },
+  "overrides": {
+    "fflate": "^0.7.5"
   }
 }
