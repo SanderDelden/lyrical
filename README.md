@@ -1,8 +1,11 @@
 # Lyrical
 
-<p align="center">
+<div align="center">
   <img src="public/icon.svg" alt="Lyrical logo" width="250">
-</p>
+  <p><strong>Sing along to Spotify from the passenger seat</strong></p>
+  <a href="https://github.com/SanderDelden/lyrical/releases"><img src="https://img.shields.io/github/v/release/SanderDelden/lyrical" alt="Latest release" /></a>
+  <a href="https://github.com/SanderDelden/lyrical/actions/workflows/ci.yml"><img src="https://github.com/SanderDelden/lyrical/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
+</div>
 
 Live, time-synced lyrics for whatever is playing on your Spotify account, made
 for a big screen you are not typing on: the browser in a Tesla, so passengers
