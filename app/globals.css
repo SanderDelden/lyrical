@@ -125,7 +125,11 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  /* Grow and scroll on short screens (e.g. the Tesla browser); the bottom
+     padding keeps content clear of the corner controls. */
+  height: auto;
+  min-height: 100vh;
+  padding: 2rem 2rem 6rem;
 }
 
 /* A blurred wash of colour behind the content, with a veil on top that keeps
@@ -209,10 +213,16 @@ h1 {
 
 .pairing {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 4rem;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+/* Stack the QR code above the text only on genuinely narrow screens. */
+@media (max-width: 40rem) {
+  .pairing {
+    flex-wrap: wrap;
+  }
 }
 
 .pairing-text {
@@ -241,6 +251,7 @@ h1 {
   height: min(22rem, 60vmin);
   padding: 0.75rem;
   border-radius: 1.75rem;
+  flex-shrink: 0;
   background: #fff;
   box-shadow: var(--shadow);
 }
