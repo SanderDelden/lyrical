@@ -58,7 +58,7 @@ create.
 Once the Spotify app is set up, you can deploy your own copy of Lyrical to
 Cloudflare Workers.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/SanderDelden/lyrical)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/SanderDelden/lyrical/tree/v1.0.0)
 
 1. Use the button above to open the Cloudflare Workers deploy page.
 
