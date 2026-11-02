@@ -75,34 +75,20 @@ Cloudflare Workers.
 5. Once the deployment is complete, the Worker URL will be displayed in the
    logs. Open your Spotify app's settings in the
    [Spotify developer dashboard](https://developer.spotify.com/dashboard) and
-   add this as a redirect URI, with `/api/auth/callback` appended. For example:
+   add this as a redirect URI, with `/api/auth/callback` appended. The full
+   Worker URL can be found in the Cloudflare dashboard of the worker under
+   `Domains`. The redirect URI should look as follows:
 
    ```bash
    https://<worker-name>.<subdomain>.workers.dev/api/auth/callback
    ```
 
-6. Open `https://<worker-name>.<subdomain>.workers.dev` on the display.
+6. Open `https://<worker-name>.<subdomain>.workers.dev` on the display and start
+   singing!
 
 > [!IMPORTANT]
 > Also add every Spotify account that will use the app under
 > **User Management**. Your own account does not need to be added.
-
-### Changing things later
-
-- **Worker name / URL:** change `name` in `wrangler.jsonc`, and update the
-  redirect URI in Spotify to match.
-- **Custom domain:** add it to the Worker under **Settings → Domains & Routes**
-  in the Cloudflare dashboard, and add
-  `https://<your-domain>/api/auth/callback` as a redirect URI in Spotify. The
-  app derives its redirect URI from the address it is opened on.
-- **Rotating Spotify credentials:** change them under **Workers & Pages → your
-  Worker → Settings → Variables and Secrets**.
-- **Deploying from your machine instead:** run `npx wrangler login` once, then:
-
-  ```sh
-  npm run build
-  npx wrangler deploy --secrets-file .dev.vars
-  ```
 
 ## Development
 
