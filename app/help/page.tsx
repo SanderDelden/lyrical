@@ -166,8 +166,7 @@ export default async function HelpPage() {
       </section>
 
       <footer className="doc-footer">
-        {/* shortcut: links to the repo while there are no releases, point at /releases/tag/v${version} once there are. */}
-        <a href="https://github.com/SanderDelden/lyrical">Lyrical v{version}</a>
+        <a href={`https://github.com/SanderDelden/lyrical/releases/tag/v${version}`}>Lyrical v{version}</a>
       </footer>
     </main>
   );
