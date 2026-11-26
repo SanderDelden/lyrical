@@ -364,6 +364,9 @@ function Player({
               <h1>{track.name}</h1>
               <p className="muted">{track.artist}</p>
               <Progress durationMs={track.durationMs} getPosition={getPosition} />
+              {lyrics?.kind === "plain" && (
+                <p className="muted unsynced">These lyrics are not time-synced, so they won't follow the song.</p>
+              )}
             </div>
           </>
         ) : (
